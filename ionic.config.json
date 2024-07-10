@@ -1,0 +1,7 @@
+{
+  "name": "SurfCam",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}
