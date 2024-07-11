@@ -17,6 +17,8 @@ export class PhotoService {
   public photos: UserPhoto[] = [];
   model: cocoSsd.ObjectDetection;
 
+  public predictions;
+
   private PHOTO_STORAGE: string = 'photos';
   private platform: Platform;
 
@@ -73,22 +75,40 @@ private async savePicture(photo: Photo) {
     directory: Directory.Data
   });
 
+  const img = new Image();
+    img.src = photo.webPath;
+    //img.src = "assets/hund.jpg"
+    img.onload = () =>  {
+    this.predictions = this.detectPersons(img);
+    }
+    
+
+
   if (this.platform.is('hybrid')) {
+    console.log('Platform: hybrid ');
     // Display the new image by rewriting the 'file://' path to HTTP
     // Details: https://ionicframework.com/docs/building/webview#file-protocol
     return {
       filepath: savedFile.uri,
       webviewPath: Capacitor.convertFileSrc(savedFile.uri),
+      predictions: this.predictions
     };
   }
   else {
     // Use webPath to display the new image instead of base64 since it's
     // already loaded into memory
+    console.log('Platform:  ');
     return {
       filepath: fileName,
-      webviewPath: photo.webPath
+      webviewPath: photo.webPath,
+      predictions: this.predictions
     };
-  }
+};
+
+  
+
+
+
 }
 
   public async addNewToGallery() {
@@ -99,29 +119,25 @@ private async savePicture(photo: Photo) {
       quality: 100
     });
 
-    const savedImageFile = await this.savePicture(capturedPhoto);
+    const savedImageFile = await this.savePicture(capturedPhoto);    
 
-    const img = new Image();
-    img.src = savedImageFile.filepath;
-    img.src = "assets/hund.jpg"
-    img.onload = () => {
-    this.detectPersons(img);
-    };
     this.photos.unshift(savedImageFile); 
   }
   
 
   async detectPersons(img: HTMLImageElement) {
-    const predictions = await this.model.detect(img);
+    this.predictions = await this.model.detect(img);
     console.log('Predictions: ');
-    console.log(predictions);
+    console.log(this.predictions);
 
-    const personCount = predictions.filter(prediction => prediction.class === 'person').length;
+    const personCount = this.predictions.filter(prediction => prediction.class === 'person').length;
     console.log(`Number of persons detected: ${personCount}`);
+    return(this.predictions);
   }
 }
 
 export interface UserPhoto {
   filepath: string;
   webviewPath?: string;
+  predictions?: any;
 }

@@ -13,11 +13,9 @@
     <ion-card *ngFor="let photo of photoService.photos; index as position">
       <img alt="photo.webviewPath" [src]="photo.webviewPath" />
       <ion-card-header>
-        <ion-card-title>{{photo.webviewPath}}</ion-card-title>              
+        <ion-card-title>{{photo.predictions | json }}</ion-card-title>              
       </ion-card-header>          
-      <ion-card-content>
-        {{photo.filepath}}
-      </ion-card-content>
+      
     </ion-card>          
 
     <ion-card>
@@ -31,7 +29,7 @@
             <ion-thumbnail slot="start">
               <img alt="Silhouette of mountains"  [src]="photo.webviewPath" />
             </ion-thumbnail>
-            <ion-label>{{photo.filepath}}</ion-label>
+            <ion-label>{{photo.predictions | json }}</ion-label>
           </ion-item>
         </ion-list>
       </ion-card-content>
