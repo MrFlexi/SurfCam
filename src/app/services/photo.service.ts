@@ -78,10 +78,10 @@ private async savePicture(photo: Photo) {
   const img = new Image();
     img.src = photo.webPath;
     //img.src = "assets/hund.jpg"
-    img.onload = () =>  {
-    this.predictions = this.detectPersons(img);
-    }
-    
+    img.onload = () => {
+        this.predictions = this.detectPersons(img);
+        console.log('on load ready');
+      } 
 
 
   if (this.platform.is('hybrid')) {
@@ -103,12 +103,10 @@ private async savePicture(photo: Photo) {
       webviewPath: photo.webPath,
       predictions: this.predictions
     };
-};
-
-  
+  };
 
 
-
+ 
 }
 
   public async addNewToGallery() {
@@ -119,7 +117,7 @@ private async savePicture(photo: Photo) {
       quality: 100
     });
 
-    const savedImageFile = await this.savePicture(capturedPhoto);    
+    const savedImageFile = await this.savePicture(capturedPhoto);  
 
     this.photos.unshift(savedImageFile); 
   }
