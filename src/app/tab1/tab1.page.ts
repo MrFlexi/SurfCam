@@ -10,7 +10,7 @@ import { NgIfContext } from '@angular/common';
 export class Tab1Page implements OnInit, OnDestroy{
 
   constructor(public myAPI: ApiService) {
-    myAPI.showToast("Hello World")
+   
   }
  
   ngOnInit() { 

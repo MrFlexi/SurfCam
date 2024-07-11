@@ -5,17 +5,20 @@ import { Platform } from '@ionic/angular';
 
 
 
+
+
 @Injectable({
   providedIn: 'root'
 })
 
 export class ApiService {
-
   public geoLocation :Position;
+  photo: string;  
 
-  constructor(private toastCtrl: ToastController) {
-    this.getLocation();
+  constructor(private toastCtrl: ToastController) {    
+    this.getLocation();    
   }
+  
    
    async showToast(msg: string) {
     const toast = await this.toastCtrl.create({

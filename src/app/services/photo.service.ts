@@ -4,6 +4,10 @@ import { Filesystem, Directory } from '@capacitor/filesystem';
 import { Preferences } from '@capacitor/preferences';
 import { Platform } from '@ionic/angular';
 import { Capacitor } from '@capacitor/core';
+import * as tf from '@tensorflow/tfjs';
+import * as cocoSsd from '@tensorflow-models/coco-ssd';
+import '@tensorflow/tfjs-backend-webgl';
+import '@tensorflow/tfjs-backend-cpu';
 
 @Injectable({
   providedIn: 'root'
@@ -11,12 +15,21 @@ import { Capacitor } from '@capacitor/core';
 export class PhotoService {
 
   public photos: UserPhoto[] = [];
+  model: cocoSsd.ObjectDetection;
 
   private PHOTO_STORAGE: string = 'photos';
   private platform: Platform;
 
   constructor(platform: Platform) {
     this.platform = platform;
+    this.loadModel();
+  }
+
+  async loadModel() {    
+    console.log('Start loading model ');
+    this.model = await cocoSsd.load();
+    console.log('done ... ');
+    
   }
 
   private async readAsBase64(photo: Photo) {
@@ -87,10 +100,26 @@ private async savePicture(photo: Photo) {
     });
 
     const savedImageFile = await this.savePicture(capturedPhoto);
-    this.photos.unshift(savedImageFile);
- 
+
+    const img = new Image();
+    img.src = savedImageFile.filepath;
+    img.src = "assets/hund.jpg"
+    img.onload = () => {
+    this.detectPersons(img);
     };
+    this.photos.unshift(savedImageFile); 
   }
+  
+
+  async detectPersons(img: HTMLImageElement) {
+    const predictions = await this.model.detect(img);
+    console.log('Predictions: ');
+    console.log(predictions);
+
+    const personCount = predictions.filter(prediction => prediction.class === 'person').length;
+    console.log(`Number of persons detected: ${personCount}`);
+  }
+}
 
 export interface UserPhoto {
   filepath: string;
